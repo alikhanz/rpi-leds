@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ПыщПыщ</title>
+
+    <style type="text/css">
+        /**
+         * Eric Meyer's Reset CSS v2.0 (https://meyerweb.com/eric/tools/css/reset/)
+         * http://cssreset.com
+         */
+        html, body, div, span, applet, object, iframe,
+        h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+        a, abbr, acronym, address, big, cite, code,
+        del, dfn, em, img, ins, kbd, q, s, samp,
+        small, strike, strong, sub, sup, tt, var,
+        b, u, i, center,
+        dl, dt, dd, ol, ul, li,
+        fieldset, form, label, legend,
+        table, caption, tbody, tfoot, thead, tr, th, td,
+        article, aside, canvas, details, embed,
+        figure, figcaption, footer, header, hgroup,
+        menu, nav, output, ruby, section, summary,
+        time, mark, audio, video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+        /* HTML5 display-role reset for older browsers */
+        article, aside, details, figcaption, figure,
+        footer, header, hgroup, menu, nav, section {
+            display: block;
+        }
+        body {
+            line-height: 1;
+        }
+        ol, ul {
+            list-style: none;
+        }
+        blockquote, q {
+            quotes: none;
+        }
+        blockquote:before, blockquote:after,
+        q:before, q:after {
+            content: '';
+            content: none;
+        }
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        *, *:before, *:after {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        body {
+          font-size: 100%;
+          font-family: 'Roboto', sans-serif;
+        }
+
+        a {
+          text-decoration: none;
+          text-align: center;
+          -webkit-transition: 0.3s;
+          -moz-transition: 0.3s;
+          -o-transition: 0.3s;
+          transition: 0.3s;
+        }
+
+        h1 {
+          font-size: 2.25em;
+        }
+
+        h2 {
+          font-size: 2em;
+        }
+
+        h1, h2 {
+          font-weight: bold;
+          padding: 0.5em 0;
+          color: #1E1D21;
+        }
+
+        .button {
+          padding: 1.25em 2em;
+        }
+
+        .button:hover {
+          opacity: 0.8;
+        }
+
+        .button:active {
+           -webkit-transform: scale(0.90);
+            -moz-transform: scale(0.90);
+            -ms-transform: scale(0.90);
+            -o-transform: scale(0.90);
+            transform: scale(0.90);
+        }
+
+        .round {
+          border-radius: 0.250em; 
+          -moz-border-radius: 0.250em; 
+          -webkit-border-radius: 0.250em; 
+        }
+
+        .normal {
+          display: inline-block;
+          width: 25%;
+          margin: 0.5em 0.25em;
+        }
+
+        .purple {
+          color: #7767C1;
+          background-color: #9D8FDE;
+        }
+
+        .blue {
+          color: #DFEAFB;
+          background-color: #8AA8DB;
+        }
+
+        .orange {
+          color: #E9A325;
+          background-color: #FFCF78;
+        }
+
+        .yellow {
+          color: #E9C325;
+          background-color: #FFE98F;
+        }
+
+        .red {
+          color: #FFDDDD;
+          background-color: #EF4141;
+        }
+
+        .green {
+          color: #157C27;
+          background-color: #91EEA1;
+        }
+
+        .wrap {
+            margin: 0 auto;
+            width: 90%;
+            top: 50%;
+            left: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+        }
+
+        .block {
+            display: block;
+            width: 100%;
+            margin: 1em 0;
+        }
+    </style>
+</head>
+<body>
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+
+    <div class="wrap" id="js-wrap" style="display: none;">
+        <h2>Leds:</h2>
+        <a class="button orange block round" id="js-button-off" href="#">Off</a>
+        <a class="button green block round" id="js-button-on" href="#">On</a>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        var wrap = document.getElementById('js-wrap');
+        wrap.style.display = 'none';
+
+        var onButton = document.getElementById('js-button-on');
+        var offButton = document.getElementById('js-button-off');
+
+        var currentLedsState = 0;
+
+        var detectButton = function() {
+            setTimeout(
+                function() {
+                    if (currentLedsState == 1) {
+                        onButton.style.display = 'block';
+                        offButton.style.display = 'none';
+                    } else {
+                        onButton.style.display = 'none';
+                        offButton.style.display = 'block';
+                    }
+
+                    // Колхоз
+                    wrap.style.display = 'block';
+                },
+                300
+            );
+        };
+
+        socket.on('relay.state', function(state) {
+            currentLedsState = state;
+            detectButton();
+        });
+
+        onButton.addEventListener('click', function() {
+            console.log('On button clicked');
+            socket.emit('relay.trigger');
+        });
+
+        offButton.addEventListener('click', function() {
+            console.log('Off button clicked');
+            socket.emit('relay.trigger');
+        });
+    </script>
+</body>
+</html>
